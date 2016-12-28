@@ -21,8 +21,9 @@
                             <p:column headerText="ID" sortBy="#{lista.idWasRevisionOf}" filterBy="#{lista.idWasRevisionOf}">
                                 <h:outputText value="#{lista.idWasRevisionOf}" />
                             </p:column>
-                            <p:column headerText="Corrected Of" sortBy="#{lista.revisionOf.name}" filterBy="#{lista.revisionOf.name}">
+                            <p:column headerText="Corrected Of" sortBy="#{lista.revisionOf.idWorkflow}" filterBy="#{lista.revisionOf.name}">
                                 <h:outputText value="#{lista.revisionOf.name}" />
+                                <h:outputText value="#{lista.revisionOf.version}" />
                             </p:column>
                             <p:column headerText="Description" sortBy="#{lista.type}" filterBy="#{lista.type}">
                                 <h:outputText value="#{lista.type}" />

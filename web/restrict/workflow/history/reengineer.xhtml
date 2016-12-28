@@ -21,8 +21,9 @@
                             <p:column headerText="ID" sortBy="#{lista.idWasDerivedFrom}" filterBy="#{lista.idWasDerivedFrom}">
                                 <h:outputText value="#{lista.idWasDerivedFrom}" />
                             </p:column>
-                            <p:column headerText="Corrected Of" sortBy="#{lista.derivedOf.name}" filterBy="#{lista.derivedOf.name}">
+                            <p:column headerText="Corrected Of" sortBy="#{lista.derivedOf.idWorkflow}" filterBy="#{lista.derivedOf.name}">
                                 <h:outputText value="#{lista.derivedOf.name}" />
+                                <h:outputText value="#{lista.revisionOf.version}" />
                             </p:column>
                             <p:column headerText="Description" sortBy="#{lista.type}" filterBy="#{lista.type}">
                                 <h:outputText value="#{lista.type}" />

@@ -14,7 +14,7 @@
                 <h2>Evolution To</h2>
                 <h:form id="formPrincipal">
                     <div align="center">
-                        <p:dataTable var="ont" value="#{ontologyBean.getEvolutionTo(workflowBean.workflow.name)}"
+                        <p:dataTable var="ont" value="#{ontologyBean.getEvolutionTo(workflowBean.workflow.name+workflowBean.workflow.version)}"
                                      id="tbl" emptyMessage="No records found"
                                      paginatorTemplate="{RowsPerPageDropdown} {CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
                                      paginator="true" rows="10" rowsPerPageTemplate="5,10,25,50,100,9999" style="width:100%">

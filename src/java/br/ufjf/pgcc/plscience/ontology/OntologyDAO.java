@@ -94,6 +94,8 @@ public class OntologyDAO {
         String ontologia = "file:///home/tassio/Dropbox/UFJF/Implemetação/Ontologia/OWL/prov-oext.owl";
         //caminho fisico da nova ontologia
         String newontology = "/home/tassio/Dropbox/UFJF/Implemetação/Ontologia/OWL/prov-oextload.owl";
+        //caminho fisico da nova ontologia
+        String newontologynotinference = "/home/tassio/Dropbox/UFJF/Implemetação/Ontologia/OWL/prov-oextload2.owl";
 
         //inicia a maquina de inferencia e carrega a ontologia nela
         OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
@@ -106,7 +108,7 @@ public class OntologyDAO {
         model = ModelFactory.createOntologyModel(ontModelSpec, ontModel);
 
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Loading data from database", "OK"));
-        //System.out.println("Loading data from database");
+        System.out.println("Loading data from database");
 
         //Prepara os objectsProperties
         ObjectProperty hm = ontModel.createObjectProperty(baseURI + "IsPartOf");
@@ -120,6 +122,7 @@ public class OntologyDAO {
         ObjectProperty s = ontModel.createObjectProperty(baseURI + "Start");
         ObjectProperty e = ontModel.createObjectProperty(baseURI + "Ended");
         ObjectProperty wawop = ontModel.createObjectProperty(baseURI + "wasAssociatedWith");
+        ObjectProperty wawoptp = ontModel.createObjectProperty(baseURI + "wasAssociatedWithTP");
         ObjectProperty wdfop = ontModel.createObjectProperty(baseURI + "wasDerivedFrom");
         ObjectProperty wroop = ontModel.createObjectProperty(baseURI + "WasRevisionOf");
 
@@ -132,7 +135,7 @@ public class OntologyDAO {
             entity = (Entity) entity1;
             model.createIndividual(baseURI + entity.getAcronym().replace(" ", "."), resourceorg);
         }
-
+        
         //Carrega os ResearchGroup na ontologia apartir do banco de dados
         Resource resourcerg = model.getResource(baseURI + "ResearchGroup");
         ResearchGroup researchGroup = new ResearchGroup();
@@ -187,9 +190,8 @@ public class OntologyDAO {
             Individual ent = model.getIndividual(baseURI + experiment.getEntityidEntity().getAcronym().replace(" ", "."));
             exp.addProperty(aobho, person);
             exp.addProperty(usedop, ent);
-
         }
-
+        
         //Carrega a associação do experimento com o grupo de pesquisa na ontologia apartir do banco de dados
         WasGeneratedBy wgb = new WasGeneratedBy();
         List wgbs = new ArrayList();
@@ -228,7 +230,7 @@ public class OntologyDAO {
         workflows = new WorkflowDAO().buscarTodas();
         for (Object workflow1 : workflows) {
             workflow = (Workflow) workflow1;
-            Individual wf = model.createIndividual(baseURI + workflow.getName().replace(" ", "."), resourcewf);
+            Individual wf = model.createIndividual(baseURI + workflow.getName().replace(" ", ".") + workflow.getVersion(), resourcewf);
             Individual sg = model.getIndividual(baseURI + workflow.getSGWfCidSGWfC().getName().replace(" ", "."));
             wf.addProperty(wat, sg);
         }
@@ -250,7 +252,7 @@ public class OntologyDAO {
         for (Object used1 : useds) {
             used = (Used) used1;
             Individual t = model.getIndividual(baseURI + used.getTaskidTask().getName().replace(" ", "."));
-            Individual w = model.getIndividual(baseURI + used.getWorkflowidWorkflow().getName().replace(" ", "."));
+            Individual w = model.getIndividual(baseURI + used.getWorkflowidWorkflow().getName().replace(" ", ".") + used.getWorkflowidWorkflow().getVersion());
             w.addProperty(usedope, t);
         }
 
@@ -261,7 +263,7 @@ public class OntologyDAO {
         for (Object wsbtwt1 : wsbtwts) {
             wsbtwt = (WasStartedByWT) wsbtwt1;
             Individual t = model.getIndividual(baseURI + wsbtwt.getTaskidTask().getName().replace(" ", "."));
-            Individual w = model.getIndividual(baseURI + wsbtwt.getWorkflowidWorkflow().getName().replace(" ", "."));
+            Individual w = model.getIndividual(baseURI + wsbtwt.getWorkflowidWorkflow().getName().replace(" ", ".") + wsbtwt.getWorkflowidWorkflow().getVersion());
             w.addProperty(s, t);
         }
 
@@ -272,7 +274,7 @@ public class OntologyDAO {
         for (Object webtwt1 : webtwts) {
             webtwt = (WasEndedByWT) webtwt1;
             Individual t = model.getIndividual(baseURI + webtwt.getTaskidTask().getName().replace(" ", "."));
-            Individual w = model.getIndividual(baseURI + webtwt.getWorkflowidWorkflow().getName().replace(" ", "."));
+            Individual w = model.getIndividual(baseURI + webtwt.getWorkflowidWorkflow().getName().replace(" ", ".") + webtwt.getWorkflowidWorkflow().getVersion());
             w.addProperty(e, t);
         }
 
@@ -304,7 +306,7 @@ public class OntologyDAO {
         waws = new WasAssociatedWithDAO().buscarTodas();
         for (Object waw1 : waws) {
             waw = (WasAssociatedWith) waw1;
-            Individual w = model.getIndividual(baseURI + waw.getWorkflowidWorkflow().getName().replace(" ", "."));
+            Individual w = model.getIndividual(baseURI + waw.getWorkflowidWorkflow().getName().replace(" ", ".") + waw.getWorkflowidWorkflow().getVersion());
             Individual exp = model.getIndividual(baseURI + waw.getExperimentExperiment().getName().replace(" ", "."));
             exp.addProperty(wawop, w);
         }
@@ -315,8 +317,8 @@ public class OntologyDAO {
         wros = new WasRevisionOfDAO().buscarTodas();
         for (Object wro1 : wros) {
             wro = (WasRevisionOf) wro1;
-            Individual of = model.getIndividual(baseURI + wro.getRevisionOf().getName().replace(" ", "."));
-            Individual to = model.getIndividual(baseURI + wro.getRevisionTo().getName().replace(" ", "."));
+            Individual of = model.getIndividual(baseURI + wro.getRevisionOf().getName().replace(" ", ".") + wro.getRevisionOf().getVersion());
+            Individual to = model.getIndividual(baseURI + wro.getRevisionTo().getName().replace(" ", ".") + wro.getRevisionTo().getVersion());
             to.addProperty(wroop, of);
         }
 
@@ -326,8 +328,8 @@ public class OntologyDAO {
         wdfs = new WasDerivedFromDAO().buscarTodas();
         for (Object wdf1 : wdfs) {
             wdf = (WasDerivedFrom) wdf1;
-            Individual of = model.getIndividual(baseURI + wdf.getDerivedOf().getName().replace(" ", "."));
-            Individual to = model.getIndividual(baseURI + wdf.getDerivedTo().getName().replace(" ", "."));
+            Individual of = model.getIndividual(baseURI + wdf.getDerivedOf().getName().replace(" ", ".") + wdf.getDerivedOf().getVersion());
+            Individual to = model.getIndividual(baseURI + wdf.getDerivedTo().getName().replace(" ", ".") + wdf.getDerivedTo().getVersion());
             to.addProperty(wdfop, of);
         }
 
@@ -340,7 +342,7 @@ public class OntologyDAO {
             ip = (InputPort) ip1;
             Individual i = model.createIndividual(baseURI + ip.getName().replace(" ", "."), resourceip);
             Individual t = model.getIndividual(baseURI + ip.getTaskidTask().getName().replace(" ", "."));
-            i.addProperty(wawop, t);
+            i.addProperty(wawoptp, t);
         }
 
         Resource resourceop = model.getResource(baseURI + "OutputPort");
@@ -351,7 +353,7 @@ public class OntologyDAO {
             op = (OutputPort) op1;
             Individual o = model.createIndividual(baseURI + op.getName().replace(" ", "."), resourceop);
             Individual t = model.getIndividual(baseURI + op.getTaskidTask().getName().replace(" ", "."));
-            o.addProperty(wawop, t);
+            o.addProperty(wawoptp, t);
         }
 
         ActedOnBehalfOf aobo = new ActedOnBehalfOf();
@@ -363,35 +365,39 @@ public class OntologyDAO {
             Individual o = model.getIndividual(baseURI + aobo.getOutputPortidPort().getName().replace(" ", "."));
             o.addProperty(aoboop, i);
         }
-
+    
         //validar a nova ontologia a ser criada
         //System.out.println("Validating the ontology");
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Validating the ontology", "Ok"));
         InfModel modelInf = ModelFactory.createInfModel(reasoner, model);
         ValidityReport vrp1 = modelInf.validate();
         if (vrp1.isValid()) {
-            //System.out.println("Valid OWL");
+            System.out.println("Valid OWL");
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Valid OWL", "Yes"));
         } else {
-            //System.out.println("Not valid OWL");
+            System.out.println("Not valid OWL");
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Not valid OWL", "Sorry, a failure occurred"));
             for (Iterator i = vrp1.getReports(); i.hasNext();) {
-                //System.out.println(" - " + i.next());
+                System.out.println(" - " + i.next());
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(" - " + i.next()));
             }
         }
 
         //Gerar o novo arquivo com os dados do banco na nova ontologia
         FileWriter arquivo = null;
+        FileWriter arquivo2 = null;
         try {
             //caminho para o novo arquivo de ontologia
             arquivo = new FileWriter(newontology);
+            arquivo2 = new FileWriter(newontologynotinference);
             //se não existir arquivo, o mesmo será criado, se não, será reescrito
         } catch (IOException ex) {
             ex.printStackTrace(); //verificando problemas
         }
         //determinando que o fluxo de saida vai para o arquivo e não para a tela            
         BufferedWriter out = new BufferedWriter(arquivo);
+        BufferedWriter out2 = new BufferedWriter(arquivo2);
+        model.write(out2, "RDF/XML-ABBREV");
         //ontologia carregada na máquina de inferencia
         model = ModelFactory.createOntologyModel(ontModelSpec, model);
         //utilizar RDF/XML-ABBREV, so RDF/XML da erro no protege!        
